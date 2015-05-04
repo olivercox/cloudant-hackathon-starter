@@ -13,10 +13,11 @@ var methodOverride = require('method-override');
 var multer  = require('multer');
 
 var _ = require('lodash');
-var MongoStore = require('connect-mongo')(session);
+//var MongoStore = require('connect-mongo')(session);
+var ConnectCouchDB = require('connect-couchdb')(session);
 var flash = require('express-flash');
 var path = require('path');
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 var passport = require('passport');
 var expressValidator = require('express-validator');
 var connectAssets = require('connect-assets');
@@ -43,9 +44,28 @@ var app = express();
 /**
  * Connect to MongoDB.
  */
+/*
 mongoose.connect(secrets.db);
 mongoose.connection.on('error', function() {
   console.error('MongoDB Connection Error. Please make sure that MongoDB is running.');
+});
+*/
+
+/**
+ * Connect to Cloudant.
+ *
+ */
+var Cloudant = require('cloudant')(secrets.db_url);
+Cloudant.db.create(secrets.session_db_name, function(err, body) {
+  Cloudant.db.create(secrets.db_name, function(err, body) {
+
+  });
+});
+var store = new ConnectCouchDB({
+uri: secrets.db_url + '/' + secrets.session_db_name,
+reapInterval: 600000,
+compactInterval: 300000,
+setThrottle: 60000
 });
 
 /**
@@ -65,12 +85,30 @@ app.use(multer({ dest: path.join(__dirname, 'uploads') }));
 app.use(expressValidator());
 app.use(methodOverride());
 app.use(cookieParser());
-app.use(session({
+
+/*app.use(session({
   resave: true,
   saveUninitialized: true,
   secret: secrets.sessionSecret,
   store: new MongoStore({ url: secrets.db, autoReconnect: true })
-}));
+}))
+
+app.use(session(
+  {
+    cookie: { maxAge: 60000 },
+    secret: secrets.sessionSecret,
+    store: store,
+    saveUninitialized:true,
+    resave: true,
+    rolling: true
+  }
+));;*/
+var sessionStore  = new session.MemoryStore;
+app.use(session({
+  key: 'JSESSIONID', resave: true,
+  saveUninitialized: true,
+  secret: secrets.sessionSecret, store: sessionStore
+  }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());

@@ -12,13 +12,16 @@ var OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 
 var secrets = require('./secrets');
 var User = require('../models/User');
+var Cloudant = require('cloudant');
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
+  User.findById(id, function(err, doc) {
+    var user = new User(doc);
+    console.log(user);
     done(err, user);
   });
 });
@@ -251,6 +254,7 @@ passport.use(new GoogleStrategy(secrets.google, function(req, accessToken, refre
       } else {
         User.findById(req.user.id, function(err, user) {
           user.google = profile.id;
+          user.email = profile.emails[0];
           user.tokens.push({ kind: 'google', accessToken: accessToken });
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.gender = user.profile.gender || profile._json.gender;
@@ -273,6 +277,7 @@ passport.use(new GoogleStrategy(secrets.google, function(req, accessToken, refre
           var user = new User();
           user.email = profile._json.email;
           user.google = profile.id;
+          user.email = profile.emails[0];
           user.tokens.push({ kind: 'google', accessToken: accessToken });
           user.profile.name = profile.displayName;
           user.profile.gender = profile._json.gender;
