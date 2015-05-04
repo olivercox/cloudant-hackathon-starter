@@ -55,14 +55,16 @@ mongoose.connection.on('error', function() {
  * Connect to Cloudant.
  *
  */
-var Cloudant = require('cloudant')(secrets.db_url);
+// if bluemix credentials exists, then override local
+secrets.cloudant = extend(secrets.cloudant, bluemix.getServiceCreds('cloudantNoSQLDB')); // VCAP_SERVICES
+var Cloudant = require('cloudant')(secrets.cloudant.url);
 Cloudant.db.create(secrets.session_db_name, function(err, body) {
   Cloudant.db.create(secrets.db_name, function(err, body) {
 
   });
 });
 var store = new ConnectCouchDB({
-uri: secrets.db_url + '/' + secrets.session_db_name,
+uri: secrets.cloudant.url + '/' + secrets.session_db_name,
 reapInterval: 600000,
 compactInterval: 300000,
 setThrottle: 60000

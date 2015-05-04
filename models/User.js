@@ -3,7 +3,7 @@ var crypto = require('crypto');
 var extend = require('util')._extend;
 var secrets = require('../config/secrets.js');
 //var mongoose = require('mongoose');
-var Cloudant = require('cloudant')(secrets.db_url)
+var Cloudant = require('cloudant')(secrets.cloudant.url)
 
 /* User Model
 {

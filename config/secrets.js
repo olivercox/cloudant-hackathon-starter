@@ -22,7 +22,9 @@
 module.exports = {
 
   db: process.env.MONGODB || 'mongodb://localhost:27017/test',
-  db_url: process.env.db_url || 'http://localhost:5984',
+  cloudant: {
+    url: process.env.db_url || 'http://localhost:5984'
+  },
   session_db_name: process.env.session_db_name || 'sessions',
   db_name: process.env.db_name || 'hackathon-starter',
 
