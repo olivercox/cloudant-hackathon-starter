@@ -21,7 +21,6 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(id, done) {
   User.findById(id, function(err, doc) {
     var user = new User(doc);
-    console.log(user);
     done(err, user);
   });
 });
@@ -254,7 +253,7 @@ passport.use(new GoogleStrategy(secrets.google, function(req, accessToken, refre
       } else {
         User.findById(req.user.id, function(err, user) {
           user.google = profile.id;
-          user.email = profile.emails[0];
+          user.email = profile.emails[0].value;
           user.tokens.push({ kind: 'google', accessToken: accessToken });
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.gender = user.profile.gender || profile._json.gender;
@@ -277,7 +276,7 @@ passport.use(new GoogleStrategy(secrets.google, function(req, accessToken, refre
           var user = new User();
           user.email = profile._json.email;
           user.google = profile.id;
-          user.email = profile.emails[0];
+          user.email = profile.emails[0].value;
           user.tokens.push({ kind: 'google', accessToken: accessToken });
           user.profile.name = profile.displayName;
           user.profile.gender = profile._json.gender;

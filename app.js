@@ -11,6 +11,7 @@ var errorHandler = require('errorhandler');
 var lusca = require('lusca');
 var methodOverride = require('method-override');
 var multer  = require('multer');
+var extend = require('util')._extend;
 
 var _ = require('lodash');
 //var MongoStore = require('connect-mongo')(session);
@@ -33,6 +34,7 @@ var contactController = require('./controllers/contact');
 /**
  * API keys and Passport configuration.
  */
+var bluemix = require('./config/bluemix');
 var secrets = require('./config/secrets');
 var passportConf = require('./config/passport');
 

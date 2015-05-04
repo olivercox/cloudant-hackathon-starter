@@ -66,10 +66,10 @@ function findById(id, next) {
  */
  User.prototype.save = function(next) {
   var user = this;
-  user._id = user.email;
   var db = Cloudant.use(secrets.db_name);
-  db.insert(user, user.email, function(err, doc) {
+  db.insert(user, user._id, function(err, doc) {
     if(err) return next(err, null);
+    user._id = doc.id;
     return next(null, user);
   });
 };
