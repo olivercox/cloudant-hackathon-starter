@@ -21,6 +21,8 @@ var ig = require('instagram-node').instagram();
 var Y = require('yui/yql');
 var _ = require('lodash');
 
+var User = require('../models/User');
+
 /**
  * GET /api
  * List of API examples.
@@ -274,6 +276,62 @@ exports.getTwitter = function(req, res, next) {
       tweets: reply.statuses
     });
   });
+};
+
+exports.getTweet = function(user) {
+  //User.findById(userid, function(err, user) {
+      var twitterId = user.twitter;
+      var token = _.findWhere(user.tokens, {kind: 'twitter'});
+      var T = new Twit({
+          consumer_key: secrets.twitter.consumerKey,
+          consumer_secret: secrets.twitter.consumerSecret,
+          access_token: token.accessToken,
+          access_token_secret: token.tokenSecret
+      });
+      var queryObj = {
+        count: 200
+      }
+      if(user.lastTweetId){
+          queryObj.since_id = user.lastTweetId;
+      }
+      queryTwitterAPI();
+      setInterval(queryTwitterAPI, 1000 * 60 * 10);
+
+      function queryTwitterAPI(){
+          T.get('statuses/home_timeline', queryObj, function(err, reply) {
+              if (err) return console.error('ERROR [%s]', JSON.stringify(err));
+              //Need to remove the first tweet because the lastTweetId is inclusive
+              if(queryObj.since_id){
+                  reply.shift(1);
+                  if(reply.length > 0){
+                      user.lastTweetId = reply[0].id;
+                      // user.save(function(err) {
+                      //     if (err) return next(err);
+                           queryObj.since_id = user.lastTweetId;
+                      // });
+                  }
+              }
+
+              var formattedJson = _.groupBy(reply, function(tweet){
+                if(tweet.user.id_str === twitterId){
+                  return "myTweet";
+                }
+
+                var mentions = _.pluck(tweet.entities.user_mentions, "id_str");
+
+                if(_.indexOf(mentions, twitterId) !== -1){
+                  return "myFriendsTweet";
+                }
+
+                return "myFollowingTweet";
+              });
+
+              // should call lory's API at http://teamav-python.mybluemix.net/process
+              console.log(formattedJson);
+
+          });
+      }
+  //});
 };
 
 /**
@@ -683,9 +741,9 @@ exports.getPayPalCancel = function(req, res) {
  */
 exports.getLob = function(req, res, next) {
   lob.routes.list({
-    zip_codes: ['10007'] 
+    zip_codes: ['10007']
   }, function(err, routes) {
-    if(err) return next(err); 
+    if(err) return next(err);
     res.render('api/lob', {
       title: 'Lob API',
       routes: routes.data[0].routes
