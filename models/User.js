@@ -57,6 +57,7 @@ function save(user, next) {
   db.insert(user, user._id, function(err, doc) {
     if(err) return next(err, null);
     user._id = doc.id;
+    user._rev = doc.rev;
     return next(null, user);
   });
 };

@@ -279,7 +279,6 @@ exports.getTwitter = function(req, res, next) {
 };
 
 exports.getTweet = function(user) {
-  //User.findById(userid, function(err, user) {
       var twitterId = user.twitter;
       var token = _.findWhere(user.tokens, {kind: 'twitter'});
       var T = new Twit({
@@ -303,13 +302,16 @@ exports.getTweet = function(user) {
               //Need to remove the first tweet because the lastTweetId is inclusive
               if(queryObj.since_id){
                   reply.shift(1);
-                  if(reply.length > 0){
-                      user.lastTweetId = reply[0].id;
-                      User.save(user, function(err) {
-                        if (err) return next(err);
-                        queryObj.since_id = user.lastTweetId;
-                      });
-                  }
+              }
+              if(reply.length > 0){
+                  user.lastTweetId = reply[0].id;
+                  User.save(user, function(err, user) {
+                    if (err) return console.error(err);
+                    queryObj.since_id = user.lastTweetId;
+                    User.findById(user._id, function(err, user){
+                      if(err) return console.log(err);
+                    })
+                  });
               }
 
               var formattedJson = _.groupBy(reply, function(tweet){
@@ -331,7 +333,6 @@ exports.getTweet = function(user) {
 
           });
       }
-  //});
 };
 
 /**

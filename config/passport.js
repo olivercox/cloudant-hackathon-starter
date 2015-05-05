@@ -17,13 +17,11 @@ var Cloudant = require('cloudant');
 var apiController = require('../controllers/api');
 
 passport.serializeUser(function(user, done) {
-  console.log(user);
   done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
   User.findById(id, function(err, doc) {
-    console.log(doc);
     var user = doc;
     done(err, user);
   });
@@ -217,11 +215,11 @@ passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tok
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.location = user.profile.location || profile._json.location;
           user.profile.picture = user.profile.picture || profile._json.profile_image_url_https;
-          // User.save(user, function(err) {
-          //   req.flash('info', { msg: 'Twitter account has been linked.' });
-             done(err, user);
-          // });
-          apiController.getTweet(user);
+          User.save(user, function(err, user) {
+              req.flash('info', { msg: 'Twitter account has been linked.' });
+              apiController.getTweet(user);
+              done(err, user);
+          });
         });
       }
     });
@@ -231,10 +229,10 @@ passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tok
         var token = _.findWhere(existingUser.tokens, { kind: 'twitter' });
         token.accessToken = accessToken;
         token.tokenSecret = tokenSecret;
-        // existingUser.save(user, function(err) {
-           done(err, existingUser);
-        // });
-        apiController.getTweet(existingUser);
+        User.save(existingUser, function(err, user) {
+          apiController.getTweet(user);
+          done(err, user);
+        });
       }
       else{
         var user = { profile: {}, tokens: [] };
@@ -247,9 +245,9 @@ passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tok
         user.profile.name = profile.displayName;
         user.profile.location = profile._json.location;
         user.profile.picture = profile._json.profile_image_url_https;
-        User.save(user, function(err) {
-          apiController.getTweet(user);
-          done(err, user);
+        User.save(user, function(err, user) {
+            apiController.getTweet(user);
+            done(err, user);
         });
       }
     });
