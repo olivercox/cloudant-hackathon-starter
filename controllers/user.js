@@ -187,7 +187,7 @@ exports.getOauthUnlink = function(req, res, next) {
 
     user[provider] = undefined;
     user.tokens = _.reject(user.tokens, function(token) { return token.kind === provider; });
-
+    user = new User(user);
     user.save(function(err) {
       if (err) return next(err);
       req.flash('info', { msg: provider + ' account has been unlinked.' });
