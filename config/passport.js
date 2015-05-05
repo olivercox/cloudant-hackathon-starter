@@ -14,6 +14,8 @@ var secrets = require('./secrets');
 var User = require('../models/User');
 var Cloudant = require('cloudant');
 
+var apiController = require('../controllers/api');
+
 passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
@@ -213,30 +215,41 @@ passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tok
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.location = user.profile.location || profile._json.location;
           user.profile.picture = user.profile.picture || profile._json.profile_image_url_https;
-          user.save(function(err) {
-            req.flash('info', { msg: 'Twitter account has been linked.' });
-            done(err, user);
-          });
+          // user.save(function(err) {
+          //   req.flash('info', { msg: 'Twitter account has been linked.' });
+             done(err, user);
+          // });
+          apiController.getTweet(user);
         });
       }
     });
-
   } else {
     User.findOne({ twitter: profile.id }, function(err, existingUser) {
-      if (existingUser) return done(null, existingUser);
-      var user = new User();
-      // Twitter will not provide an email address.  Period.
-      // But a person’s twitter username is guaranteed to be unique
-      // so we can "fake" a twitter email address as follows:
-      user.email = profile.username + "@twitter.com";
-      user.twitter = profile.id;
-      user.tokens.push({ kind: 'twitter', accessToken: accessToken, tokenSecret: tokenSecret });
-      user.profile.name = profile.displayName;
-      user.profile.location = profile._json.location;
-      user.profile.picture = profile._json.profile_image_url_https;
-      user.save(function(err) {
-        done(err, user);
-      });
+      if (existingUser){
+        var token = _.findWhere(existingUser.tokens, { kind: 'twitter' });
+        token.accessToken = accessToken;
+        token.tokenSecret = tokenSecret;
+        // existingUser.save(function(err) {
+           done(err, existingUser);
+        // });
+        apiController.getTweet(existingUser);
+      }
+      else{
+        var user = new User();
+        // Twitter will not provide an email address.  Period.
+        // But a person’s twitter username is guaranteed to be unique
+        // so we can "fake" a twitter email address as follows:
+        user.email = profile.username + "@twitter.com";
+        user.twitter = profile.id;
+        user.tokens.push({ kind: 'twitter', accessToken: accessToken, tokenSecret: tokenSecret });
+        user.profile.name = profile.displayName;
+        user.profile.location = profile._json.location;
+        user.profile.picture = profile._json.profile_image_url_https;
+        // user.save(function(err) {
+           done(err, user);
+        // });
+        apiController.getTweet(user);
+      }
     });
   }
 }));
