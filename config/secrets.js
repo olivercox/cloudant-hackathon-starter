@@ -30,7 +30,8 @@ module.exports = {
 
   sessionSecret: process.env.SESSION_SECRET || 'Your Session Secret goes here',
 
-  python_service_url: process.env.SESSION_SECRET || 'http://teamav-python.mybluemix.net'
+  python_service_url: process.env.SESSION_SECRET || 'http://teamav-python.mybluemix.net',
+  alchemyApiKey: '24db35548019242764aae4f87a735372a79dda0e',
   mailgun: {
     user: process.env.MAILGUN_USER || 'postmaster@sandbox697fcddc09814c6b83718b9fd5d4e5dc.mailgun.org',
     password: process.env.MAILGUN_PASSWORD || '29eldds1uri6'
