@@ -21,6 +21,7 @@ var ig = require('instagram-node').instagram();
 var Y = require('yui/yql');
 var _ = require('lodash');
 
+var http = require('http');
 var User = require('../models/User');
 
 /**
@@ -288,7 +289,7 @@ exports.getTweet = function(user) {
           access_token_secret: token.tokenSecret
       });
       var queryObj = {
-        count: 200
+        count: 10
       }
       if(user.lastTweetId){
           queryObj.since_id = user.lastTweetId;
@@ -305,32 +306,55 @@ exports.getTweet = function(user) {
               }
               if(reply.length > 0){
                   user.lastTweetId = reply[0].id;
-                  User.save(user, function(err, user) {
+                  User.save(user, function(err, newuser) {
                     if (err) return console.error(err);
-                    queryObj.since_id = user.lastTweetId;
-                    User.findById(user._id, function(err, user){
-                      if(err) return console.log(err);
-                    })
+                    queryObj.since_id = newuser.lastTweetId;
+                    user = newuser;
                   });
               }
 
               var formattedJson = _.groupBy(reply, function(tweet){
-                if(tweet.user.id_str === twitterId){
-                  return "myTweet";
-                }
+                // if(tweet.user.id_str === twitterId){
+                //   return "myTweet";
+                // }
 
-                var mentions = _.pluck(tweet.entities.user_mentions, "id_str");
+                // var mentions = _.pluck(tweet.entities.user_mentions, "id_str");
 
-                if(_.indexOf(mentions, twitterId) !== -1){
-                  return "myFriendsTweet";
-                }
+                // if(_.indexOf(mentions, twitterId) !== -1){
+                //   return "myFriendsTweet";
+                // }
 
                 return "myFollowingTweet";
               });
 
               // should call lory's API at http://teamav-python.mybluemix.net/process
-              //console.log(formattedJson);
+              var postData = JSON.stringify(formattedJson);
+              var options = {
+                hostname: 'teamav-python.mybluemix.net',
+                port: 80,
+                path: '/process',
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Content-Length': postData.length
+                }
+              }
+              var req = http.request(options, function(res){
+                  console.log('STATUS: ' + res.statusCode);
+                  console.log('HEADERS: ' + JSON.stringify(res.headers));
+                  res.setEncoding('utf8');
+                  res.on('data', function (chunk) {
+                    console.log('BODY: ' + chunk);
+                  });
+              })
+              req.on('error', function(e) {
+                console.log('problem with request: ' + e.message);
+              });
 
+              // write data to request body
+              console.log(postData);
+              req.write(postData);
+              req.end();
           });
       }
 };

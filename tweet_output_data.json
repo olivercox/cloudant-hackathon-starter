@@ -8,14 +8,14 @@
        "price": "$23.99",
        "imageUrl": "http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02770117_00.jpg?sw=350&sh=350&sm=fit",
        "navUrl": "http://tinyurl.com/p5j9xyj",
-       "prodRelevance": "0.33",
+       "prodRelevance": "0.33"
     },
    {
      "prodName": "ARDUINO YÚN LINUX MICROCONTROLLER BOARD WITH WI-FI",
       "price": "$74.99",
       "imageUrl": "http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02760357_00.jpg?sw=350&sh=350&sm=fit",
       "navUrl": "http://tinyurl.com/pdslhdp",
-      "prodRelevance": "0.33",
+      "prodRelevance": "0.33"
    }
  ]
  },
@@ -24,11 +24,11 @@
     "match": "Product",
     "items": [
       {
-        "prodName": "Dooney & Bourke Saffiano Small Lexington Shopper",
+        "prodName": "DOONEY & BOURKE SAFFIANO SMALL LEXINGTON SHOPPER",
          "price": "$228.00",
          "imageUrl": "http://slimages.macys.com/is/image/MCY/products/7/optimized/2802507_fpx.tif?wid=330&hei=404&fit=fit,1&$filterlrg$",
          "navUrl": "http://tinyurl.com/lucy563",
-         "prodRelevance": "0.33",
+         "prodRelevance": "0.33"
       }
    ]
  },
@@ -41,7 +41,7 @@
         "price": "$899.99",
         "imageUrl": "http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430848831372/images/01602711_00.jpg?sw=350&sh=350&sm=fit",
         "navUrl": "http://tinyurl.com/mx7shy3",
-        "prodRelevance": "0.33",
+        "prodRelevance": "0.33"
      }
   ]
   }
