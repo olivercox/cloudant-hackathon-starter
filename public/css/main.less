@@ -31,7 +31,18 @@ footer {
 
 // Navbar
 // -------------------------
-
+.navbar-header{
+  background-color:#69BA3B;
+  .navbar-brand, .nav-brand:hover{
+    color:white !important;
+  }
+  .navbar-toggle, .navbar-toggle:hover{
+    border-color:white;
+    .icon-bar{
+      background-color:white !important;
+    }
+  }
+}
 .navbar-nav img {
   width: 30px;
   height: 30px;
@@ -78,7 +89,10 @@ a:active .vote-up, a:active .vote-down{
   margin: 0px -16px;
   table{
     width:100%;
-    
+    height: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
     td{
       text-align:center;
     }
@@ -94,7 +108,7 @@ a:active .vote-up, a:active .vote-down{
       top:0px;
       right:0px;
       font-size:30px;
-      color:#55acee;
+      color:#999;
     }
 
     .product-image-action{
