@@ -314,15 +314,15 @@ exports.getTweet = function(user) {
               }
 
               var formattedJson = _.groupBy(reply, function(tweet){
-                if(tweet.user.id_str === twitterId){
-                  return "myTweet";
-                }
+                // if(tweet.user.id_str === twitterId){
+                //   return "myTweet";
+                // }
 
-                var mentions = _.pluck(tweet.entities.user_mentions, "id_str");
+                // var mentions = _.pluck(tweet.entities.user_mentions, "id_str");
 
-                if(_.indexOf(mentions, twitterId) !== -1){
-                  return "myFriendsTweet";
-                }
+                // if(_.indexOf(mentions, twitterId) !== -1){
+                //   return "myFriendsTweet";
+                // }
 
                 return "myFollowingTweet";
               });
