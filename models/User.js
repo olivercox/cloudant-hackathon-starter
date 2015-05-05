@@ -30,18 +30,6 @@ var Cloudant = require('cloudant')(secrets.cloudant.url)
   resetPasswordExpires: Date
 };
 */
-function User(user) {
-  this.email = '';
-  this.profile = {
-    name: '',
-    gender: '',
-    location: '',
-    website: '',
-    picture: ''
-  }
-  this.tokens = [];
-  extend(this, user);
-}
 
 function findOne(user, next) {
   var db = Cloudant.use(secrets.db_name);
@@ -64,8 +52,7 @@ function findById(id, next) {
 /**
  * Save the user.
  */
- User.prototype.save = function(next) {
-  var user = this;
+function save(user, next) {
   var db = Cloudant.use(secrets.db_name);
   db.insert(user, user._id, function(err, doc) {
     if(err) return next(err, null);
@@ -77,8 +64,7 @@ function findById(id, next) {
 /**
  * Password hash middleware.
  */
- User.prototype.hashPassword = function(next) {
-  var user = this;
+function hashPassword(user, next) {
   bcrypt.genSalt(10, function(err, salt) {
     if (err) return next(err);
     bcrypt.hash(user.password, salt, null, function(err, hash) {
@@ -92,8 +78,8 @@ function findById(id, next) {
 /**
  * Helper method for validating user's password.
  */
- User.prototype.comparePassword = function(candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+function comparePassword(user, candidatePassword, cb) {
+  bcrypt.compare(candidatePassword, user.password, function(err, isMatch) {
     if (err) return cb(err);
     cb(null, isMatch);
   });
@@ -102,13 +88,15 @@ function findById(id, next) {
 /**
  * Helper method for getting user's gravatar.
  */
- User.prototype.gravatar = function(size) {
+function gravatar(user, size) {
   if (!size) size = 200;
-  if (!this.email) return 'https://gravatar.com/avatar/?s=' + size + '&d=retro';
-  var md5 = crypto.createHash('md5').update(this.email).digest('hex');
+  if (!user.email) return 'https://gravatar.com/avatar/?s=' + size + '&d=retro';
+  var md5 = crypto.createHash('md5').update(user.email).digest('hex');
   return 'https://gravatar.com/avatar/' + md5 + '?s=' + size + '&d=retro';
 };
 
-module.exports = User;
 module.exports.findOne = findOne;
 module.exports.findById = findById;
+module.exports.save = save;
+module.exports.comparePassword = comparePassword;
+module.exports.gravatar = gravatar;

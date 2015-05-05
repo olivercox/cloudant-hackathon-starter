@@ -17,12 +17,14 @@ var Cloudant = require('cloudant');
 var apiController = require('../controllers/api');
 
 passport.serializeUser(function(user, done) {
+  console.log(user);
   done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
   User.findById(id, function(err, doc) {
-    var user = new User(doc);
+    console.log(doc);
+    var user = doc;
     done(err, user);
   });
 });
@@ -43,7 +45,7 @@ passport.use(new InstagramStrategy(secrets.instagram,function(req, accessToken, 
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.picture = user.profile.picture || profile._json.data.profile_picture;
           user.profile.website = user.profile.website || profile._json.data.website;
-          user.save(function(err) {
+          User.save(user, function(err) {
             req.flash('info', { msg: 'Instagram account has been linked.' });
             done(err, user);
           });
@@ -54,7 +56,7 @@ passport.use(new InstagramStrategy(secrets.instagram,function(req, accessToken, 
     User.findOne({ instagram: profile.id }, function(err, existingUser) {
       if (existingUser) return done(null, existingUser);
 
-      var user = new User();
+      var user = { profile: {}, tokens: [] };
       user.instagram = profile.id;
       user.tokens.push({ kind: 'instagram', accessToken: accessToken });
       user.profile.name = profile.displayName;
@@ -64,7 +66,7 @@ passport.use(new InstagramStrategy(secrets.instagram,function(req, accessToken, 
       user.email = profile.username + "@instagram.com";
       user.profile.website = profile._json.data.website;
       user.profile.picture = profile._json.data.profile_picture;
-      user.save(function(err) {
+      User.save(user, function(err) {
         done(err, user);
       });
     });
@@ -119,7 +121,7 @@ passport.use(new FacebookStrategy(secrets.facebook, function(req, accessToken, r
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.gender = user.profile.gender || profile._json.gender;
           user.profile.picture = user.profile.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
-          user.save(function(err) {
+          User.save(user, function(err) {
             req.flash('info', { msg: 'Facebook account has been linked.' });
             done(err, user);
           });
@@ -134,7 +136,7 @@ passport.use(new FacebookStrategy(secrets.facebook, function(req, accessToken, r
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Facebook manually from Account Settings.' });
           done(err);
         } else {
-          var user = new User();
+          var user = { profile: {}, tokens: [] };
           user.email = profile._json.email;
           user.facebook = profile.id;
           user.tokens.push({ kind: 'facebook', accessToken: accessToken });
@@ -142,7 +144,7 @@ passport.use(new FacebookStrategy(secrets.facebook, function(req, accessToken, r
           user.profile.gender = profile._json.gender;
           user.profile.picture = 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
           user.profile.location = (profile._json.location) ? profile._json.location.name : '';
-          user.save(function(err) {
+          User.save(user, function(err) {
             done(err, user);
           });
         }
@@ -168,7 +170,7 @@ passport.use(new GitHubStrategy(secrets.github, function(req, accessToken, refre
           user.profile.picture = user.profile.picture || profile._json.avatar_url;
           user.profile.location = user.profile.location || profile._json.location;
           user.profile.website = user.profile.website || profile._json.blog;
-          user.save(function(err) {
+          User.save(user, function(err) {
             req.flash('info', { msg: 'GitHub account has been linked.' });
             done(err, user);
           });
@@ -183,7 +185,7 @@ passport.use(new GitHubStrategy(secrets.github, function(req, accessToken, refre
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with GitHub manually from Account Settings.' });
           done(err);
         } else {
-          var user = new User();
+          var user = { profile: {}, tokens: [] };
           user.email = profile._json.email;
           user.github = profile.id;
           user.tokens.push({ kind: 'github', accessToken: accessToken });
@@ -191,7 +193,7 @@ passport.use(new GitHubStrategy(secrets.github, function(req, accessToken, refre
           user.profile.picture = profile._json.avatar_url;
           user.profile.location = profile._json.location;
           user.profile.website = profile._json.blog;
-          user.save(function(err) {
+          User.save(user, function(err) {
             done(err, user);
           });
         }
@@ -215,7 +217,7 @@ passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tok
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.location = user.profile.location || profile._json.location;
           user.profile.picture = user.profile.picture || profile._json.profile_image_url_https;
-          // user.save(function(err) {
+          // User.save(user, function(err) {
           //   req.flash('info', { msg: 'Twitter account has been linked.' });
              done(err, user);
           // });
@@ -229,13 +231,13 @@ passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tok
         var token = _.findWhere(existingUser.tokens, { kind: 'twitter' });
         token.accessToken = accessToken;
         token.tokenSecret = tokenSecret;
-        // existingUser.save(function(err) {
+        // existingUser.save(user, function(err) {
            done(err, existingUser);
         // });
         apiController.getTweet(existingUser);
       }
       else{
-        var user = new User();
+        var user = { profile: {}, tokens: [] };
         // Twitter will not provide an email address.  Period.
         // But a person’s twitter username is guaranteed to be unique
         // so we can "fake" a twitter email address as follows:
@@ -245,10 +247,10 @@ passport.use(new TwitterStrategy(secrets.twitter, function(req, accessToken, tok
         user.profile.name = profile.displayName;
         user.profile.location = profile._json.location;
         user.profile.picture = profile._json.profile_image_url_https;
-        // user.save(function(err) {
-           done(err, user);
-        // });
-        apiController.getTweet(user);
+        User.save(user, function(err) {
+          apiController.getTweet(user);
+          done(err, user);
+        });
       }
     });
   }
@@ -271,7 +273,7 @@ passport.use(new GoogleStrategy(secrets.google, function(req, accessToken, refre
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.gender = user.profile.gender || profile._json.gender;
           user.profile.picture = user.profile.picture || profile._json.picture;
-          user.save(function(err) {
+          User.save(user, function(err) {
             req.flash('info', { msg: 'Google account has been linked.' });
             done(err, user);
           });
@@ -286,7 +288,7 @@ passport.use(new GoogleStrategy(secrets.google, function(req, accessToken, refre
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
           done(err);
         } else {
-          var user = new User();
+          var user = { profile: {}, tokens: [] };
           user.email = profile._json.email;
           user.google = profile.id;
           user.email = profile.emails[0].value;
@@ -294,7 +296,7 @@ passport.use(new GoogleStrategy(secrets.google, function(req, accessToken, refre
           user.profile.name = profile.displayName;
           user.profile.gender = profile._json.gender;
           user.profile.picture = profile._json.picture;
-          user.save(function(err) {
+          User.save(user, function(err) {
             done(err, user);
           });
         }
@@ -320,7 +322,7 @@ passport.use(new LinkedInStrategy(secrets.linkedin, function(req, accessToken, r
           user.profile.location = user.profile.location || profile._json.location.name;
           user.profile.picture = user.profile.picture || profile._json.pictureUrl;
           user.profile.website = user.profile.website || profile._json.publicProfileUrl;
-          user.save(function(err) {
+          User.save(user, function(err) {
             req.flash('info', { msg: 'LinkedIn account has been linked.' });
             done(err, user);
           });
@@ -335,7 +337,7 @@ passport.use(new LinkedInStrategy(secrets.linkedin, function(req, accessToken, r
           req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with LinkedIn manually from Account Settings.' });
           done(err);
         } else {
-          var user = new User();
+          var user = { profile: {}, tokens: [] };
           user.linkedin = profile.id;
           user.tokens.push({ kind: 'linkedin', accessToken: accessToken });
           user.email = profile._json.emailAddress;
@@ -343,7 +345,7 @@ passport.use(new LinkedInStrategy(secrets.linkedin, function(req, accessToken, r
           user.profile.location = profile._json.location.name;
           user.profile.picture = profile._json.pictureUrl;
           user.profile.website = profile._json.publicProfileUrl;
-          user.save(function(err) {
+          User.save(user, function(err) {
             done(err, user);
           });
         }
@@ -367,7 +369,7 @@ passport.use('tumblr', new OAuthStrategy({
   function(req, token, tokenSecret, profile, done) {
     User.findById(req.user._id, function(err, user) {
       user.tokens.push({ kind: 'tumblr', accessToken: token, tokenSecret: tokenSecret });
-      user.save(function(err) {
+      User.save(user, function(err) {
         done(err, user);
       });
     });
@@ -388,7 +390,7 @@ passport.use('foursquare', new OAuth2Strategy({
   function(req, accessToken, refreshToken, profile, done) {
     User.findById(req.user._id, function(err, user) {
       user.tokens.push({ kind: 'foursquare', accessToken: accessToken });
-      user.save(function(err) {
+      User.save(user, function(err) {
         done(err, user);
       });
     });
@@ -409,7 +411,7 @@ passport.use('venmo', new OAuth2Strategy({
   function(req, accessToken, refreshToken, profile, done) {
     User.findById(req.user._id, function(err, user) {
       user.tokens.push({ kind: 'venmo', accessToken: accessToken });
-      user.save(function(err) {
+      User.save(user, function(err) {
         done(err, user);
       });
     });

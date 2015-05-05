@@ -4,22 +4,22 @@ var User = require('../models/User');
 
 describe('User Model', function() {
   it('should create a new user', function(done) {
-    var user = new User({
+    var user = {
       email: 'test@gmail.com',
       password: 'password'
-    });
-    user.save(function(err) {
+    };
+    User.save(user, function(err) {
       if (err) return done(err);
       done();
     })
   });
 
   it('should not create a user with the unique email', function(done) {
-    var user = new User({
+    var user = {
       email: 'test@gmail.com',
       password: 'password'
-    });
-    user.save(function(err) {
+    };
+    User.save(user, function(err) {
       if (err) err.code.should.equal(11000);
       done();
     });

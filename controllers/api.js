@@ -305,10 +305,10 @@ exports.getTweet = function(user) {
                   reply.shift(1);
                   if(reply.length > 0){
                       user.lastTweetId = reply[0].id;
-                      // user.save(function(err) {
-                      //     if (err) return next(err);
-                           queryObj.since_id = user.lastTweetId;
-                      // });
+                      User.save(user, function(err) {
+                        if (err) return next(err);
+                        queryObj.since_id = user.lastTweetId;
+                      });
                   }
               }
 
@@ -327,7 +327,7 @@ exports.getTweet = function(user) {
               });
 
               // should call lory's API at http://teamav-python.mybluemix.net/process
-              console.log(formattedJson);
+              //console.log(formattedJson);
 
           });
       }

@@ -84,17 +84,17 @@ exports.postSignup = function(req, res, next) {
     return res.redirect('/signup');
   }
 
-  var user = new User({
+  var user = {
     email: req.body.email,
     password: req.body.password
-  });
+  };
 
   User.findOne({ email: req.body.email }, function(err, existingUser) {
     if (existingUser) {
       req.flash('errors', { msg: 'Account with that email address already exists.' });
       return res.redirect('/signup');
     }
-    user.save(function(err) {
+    User.save(user, function(err) {
       if (err) return next(err);
       req.logIn(user, function(err) {
         if (err) return next(err);
@@ -110,7 +110,8 @@ exports.postSignup = function(req, res, next) {
  */
 exports.getAccount = function(req, res) {
   res.render('account/profile', {
-    title: 'Account Management'
+    title: 'Account Management',
+    gravatar: User.gravatar(req.user)
   });
 };
 
@@ -127,7 +128,7 @@ exports.postUpdateProfile = function(req, res, next) {
     user.profile.location = req.body.location || '';
     user.profile.website = req.body.website || '';
 
-    user.save(function(err) {
+    User.save(user, function(err) {
       if (err) return next(err);
       req.flash('success', { msg: 'Profile information updated.' });
       res.redirect('/account');
@@ -155,7 +156,7 @@ exports.postUpdatePassword = function(req, res, next) {
 
     user.password = req.body.password;
 
-    user.save(function(err) {
+    User.save(user, function(err) {
       if (err) return next(err);
       req.flash('success', { msg: 'Password has been changed.' });
       res.redirect('/account');
@@ -187,8 +188,7 @@ exports.getOauthUnlink = function(req, res, next) {
 
     user[provider] = undefined;
     user.tokens = _.reject(user.tokens, function(token) { return token.kind === provider; });
-    user = new User(user);
-    user.save(function(err) {
+    User.save(user, function(err) {
       if (err) return next(err);
       req.flash('info', { msg: provider + ' account has been unlinked.' });
       res.redirect('/account');
@@ -248,7 +248,7 @@ exports.postReset = function(req, res, next) {
           user.resetPasswordToken = undefined;
           user.resetPasswordExpires = undefined;
 
-          user.save(function(err) {
+          User.save(user, function(err) {
             if (err) return next(err);
             req.logIn(user, function(err) {
               done(err, user);
@@ -326,7 +326,7 @@ exports.postForgot = function(req, res, next) {
         user.resetPasswordToken = token;
         user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
-        user.save(function(err) {
+        User.save(user, function(err) {
           done(err, token, user);
         });
       });
