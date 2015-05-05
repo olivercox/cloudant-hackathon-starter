@@ -7,15 +7,37 @@ exports.index = function(req, res) {
   	res.redirect('/login');
   }
   else{
+    var id = req.params.id;
+    var fs = require('fs');
+    var items = [];
+    var obj = JSON.parse(fs.readFileSync('tweet_output_data.json', 'utf8'));
+    console.log("Got json data");
+    console.log(obj);
+    obj.forEach(function(result) {
+      result.items.forEach(function(item) {
+        items.push(item);
+      });
+    });
   	res.render('home', {
-	    //products
-	  });
+      items: items
+  	});
   }
 };
 
 exports.produceDetail = function(req, res){
-	var id = req.params.id;
-	res.render('detail', {
-		//product detail
-	});
+  var id = req.params.id;
+  var fs = require('fs');
+  var items = [];
+  var obj = JSON.parse(fs.readFileSync('tweet_output_data.json', 'utf8'));
+  console.log("Got json data");
+  console.log(obj);
+  obj.forEach(function(result) {
+    result.items.forEach(function(item) {
+      items.push(item);
+    });
+  });
+  console.log(items[id]);
+  res.render('detail', {
+    item: items[id]
+  });
 }

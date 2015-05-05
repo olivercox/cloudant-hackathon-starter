@@ -136,6 +136,17 @@ exports.postUpdateProfile = function(req, res, next) {
   });
 };
 
+exports.postUserInterests = function(req, res, next) {
+  User.findById(req.user.id, function(err, user) {
+    if (err) return next(err);
+    user.interests = req.body;
+    User.save(user, function(err) {
+      if (err) return next(err);
+      return res.send(user);
+    });
+  });
+}
+
 /**
  * POST /account/password
  * Update current password.

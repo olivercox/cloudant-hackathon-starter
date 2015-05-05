@@ -2,73 +2,21 @@ extends layout
 
 block content
   .row
-    .col-xs-6
-      a(href='/products/1', role='button') 
-        div.product-container
-          div.product-image-container
-            div.source-mark
-              span.fa.fa-twitter-square
-            img.img-responsive(src='http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02760357_00.jpg?sw=350&sh=350&sm=fit')
-            div.product-image-action
-              div.vote-up
-                span.fa.fa-angle-up
-              div.divider
-              div.vote-down
-                span.fa.fa-angle-down
-          table
-            td.col-xs-3
-              span.fa.fa-star
-            td.col-xs-9
-              h5 Arduino
-              p $74.99
-    .col-xs-6
-      a(href='/products/1', role='button') 
-        div.product-container
-          div.product-image-container
-            img.img-responsive(src='http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02760357_00.jpg?sw=350&sh=350&sm=fit')
-            div.product-image-action
-              div.vote-up
-                span.fa.fa-angle-up
-              div.divider
-              div.vote-down
-                span.fa.fa-angle-down
-          table
-            td.col-xs-3
-              span.fa.fa-star
-            td.col-xs-9
-              h5 Arduino
-              p $74.99
-    .col-xs-6
-      a(href='/products/1', role='button') 
-        div.product-container
-          div.product-image-container
-            img.img-responsive(src='http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02760357_00.jpg?sw=350&sh=350&sm=fit')
-            div.product-image-action
-              div.vote-up
-                span.fa.fa-angle-up
-              div.divider
-              div.vote-down
-                span.fa.fa-angle-down
-          table
-            td.col-xs-3
-              span.fa.fa-star
-            td.col-xs-9
-              h5 Arduino
-              p $74.99
-    .col-xs-6
-      a(href='/products/1', role='button') 
-        div.product-container
-          div.product-image-container
-            img.img-responsive(src='http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02760357_00.jpg?sw=350&sh=350&sm=fit')
-            div.product-image-action
-              div.vote-up
-                span.fa.fa-angle-up
-              div.divider
-              div.vote-down
-                span.fa.fa-angle-down
-          table
-            td.col-xs-3
-              span.fa.fa-star
-            td.col-xs-9
-              h5 Arduino
-              p $74.99
+    each item in items
+      .col-xs-6
+        a(href='/products/#{item.id}', role='button') 
+          div.product-container
+            div.product-image-container
+              div.source-mark
+                span.fa.fa-twitter-square
+              img.img-responsive(src='#{item.imageUrl}')
+              div.product-image-action
+                div.vote-up
+                  span.fa.fa-angle-up
+                div.divider
+                div.vote-down
+                  span.fa.fa-angle-down
+            table
+              td.col-xs-12
+                h5 #{item.prodName}
+                p #{item.price}

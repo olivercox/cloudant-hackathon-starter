@@ -1,0 +1,52 @@
+[
+  {
+  "tweet": "My son wants me to buy an Arduino for him. So cool! #Robotics #ProudParent",
+  "match": "Product",
+  "items": [
+    { 
+      "id":0,
+      "prodName": "PARALLAX CRAWLER KIT FOR BOE-BOT® ROBOT",
+       "price": "$23.99",
+       "imageUrl": "http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02770117_00.jpg?sw=350&sh=350&sm=fit",
+       "navUrl": "http://tinyurl.com/p5j9xyj",
+       "prodRelevance": "0.33"
+    },
+   {
+     "id":1,
+     "prodName": "ARDUINO YÚN LINUX MICROCONTROLLER BOARD WITH WI-FI",
+      "price": "$74.99",
+      "imageUrl": "http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430834427600/images/02760357_00.jpg?sw=350&sh=350&sm=fit",
+      "navUrl": "http://tinyurl.com/pdslhdp",
+      "prodRelevance": "0.33"
+   }
+ ]
+ },
+  {
+    "tweet": "I spotted this pink Dooney and Bourke bag. I must buy it NOW!",
+    "match": "Product",
+    "items": [
+      {
+        "id":2,
+        "prodName": "DOONEY & BOURKE SAFFIANO SMALL LEXINGTON SHOPPER",
+         "price": "$228.00",
+         "imageUrl": "http://slimages.macys.com/is/image/MCY/products/7/optimized/2802507_fpx.tif?wid=330&hei=404&fit=fit,1&$filterlrg$",
+         "navUrl": "http://tinyurl.com/lucy563",
+         "prodRelevance": "0.33"
+      }
+   ]
+ },
+ {
+   "tweet": "I really want to buy the Nikon D5200. Does anyone have thoughts, good or bad? #photography #camera",
+   "match": "Product",
+   "items": [
+     {
+       "id":3,
+       "prodName": "NIKON D5200 24.1MP DIGITAL SLR WITH 18-55MM LENS (BLACK)",
+        "price": "$899.99",
+        "imageUrl": "http://demandware.edgesuite.net/sits_pod26/dw/image/v2/AASR_PRD/on/demandware.static/Sites-radioshack-Site/Sites-master-catalog/default/v1430848831372/images/01602711_00.jpg?sw=350&sh=350&sm=fit",
+        "navUrl": "http://tinyurl.com/mx7shy3",
+        "prodRelevance": "0.33"
+     }
+  ]
+  }
+]
